@@ -1,5 +1,7 @@
 # Welcome to eQuest Utilities
 
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
 eQuest Utilities is a comprehensive suite of tools designed to help you work with eQuest more efficiently. Our utilities include:
 
 [Visit eQuest Utilities](https://equest-utilities-edsglobal.streamlit.app/)
