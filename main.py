@@ -8,6 +8,7 @@ from SIM_Parser import sim_parserv01
 from SIM2PDF import sim_print
 from BaselineAutomation import baselineAuto
 from ScheduleGenerator import schedule_v01
+from ScheduleGenerator import sheduls_analytics
 from q import qa
 from streamlit_card import card
 from PIL import Image as PILImage
@@ -21,8 +22,11 @@ from matplotlib.animation import FuncAnimation
 # Email credentials and recipient
 TO_EMAIL = "rajeev@edsglobal.com"
 # Set the page configuration with additional options layout='wide',
-st.set_page_config(page_title="eQuest Utilities", page_icon="💡", layout='wide',
-    menu_items={                          # Custom menu items
+st.set_page_config(
+    page_title="eQUEST Utilities",
+    page_icon="💡",
+    layout='wide',  # Only 'centered' or 'wide' are valid options
+    menu_items={                          
         'Get Help': 'https://www.example.com/help',
         'Report a bug': 'https://www.example.com/bug',
         'About': '# This is an **eQuest Utilities** application!'
@@ -180,7 +184,7 @@ def main():
         # Display the image
         st.image(logo_image_path, width=80)
     with col2:
-        st.markdown("<h1 class='heading-with-shadow'>eQuest Utilities</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 class='heading-with-shadow'>eQUEST Utilities</h1>", unsafe_allow_html=True)
         
     on = st.toggle("Select Theme")
     if on:
@@ -218,50 +222,64 @@ def main():
 
     #Navigation bar with buttons below the header
     st.markdown('<hr style="border:1px solid black">', unsafe_allow_html=True)
+    # Inject CSS to make all buttons the same size
+    st.markdown("""
+        <style>
+        .stButton button {
+            height: 30px;
+            width: 165px;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
-    col2, col3, col4, col5, col6, col7, col8 = st.columns([1,1,1,1,1,1,1]) 
-    col9, col10, col11, col12, col13, col14, col15 = st.columns([1,1,1,1,1,1,1])
+    # Create two rows of columns with equal widths
+    col2, col3, col4, col5, col6, col7, col8 = st.columns(7) 
+    col9, col10, col11, col12, col13, col14, col15 = st.columns(7)
+    
+    # First row of buttons
     with col2:
-        if st.button("About EDS", key="buttons"):
+        if st.button("About EDS", key="button_eds"):
             st.session_state.script_choice = "eds"
     with col3:
-        if st.button("eQuest Utilities"):
+        if st.button("eQUEST Utilities", key="button_utilities"):
             st.session_state.script_choice = "about"
     with col4:
-        if st.button("INP Parser"):
+        if st.button("INP Parser", key="button_inp_parser"):
             st.session_state.script_choice = "INP Parser"
     with col5:
-        if st.button("Purging INP"):
+        if st.button("Purging INP", key="button_purging_inp"):
             st.session_state.script_choice = "Purging INP"
     with col6:
-        if st.button("SIM Parser"):
+        if st.button("SIM Parser", key="button_sim_parser"):
             st.session_state.script_choice = "SIM Parser"
     with col7:
-        if st.button("SIM to PDF"):
+        if st.button("SIM to PDF", key="button_sim_to_pdf"):
             st.session_state.script_choice = "SIM to PDF"
     with col8:
-        if st.button("Baseline Automation"):
+        if st.button("Baseline Automation", key="button_baseline_automation"):
             st.session_state.script_choice = "baselineAutomation"
+    
+    # Second row of buttons
     with col9:
-        if st.button("EXE and Resources"):
+        if st.button("EXE and Resources", key="button_exe_resources"):
             st.session_state.script_choice = "exe"
     with col10:
-        if st.button("Schedule Generator"): 
+        if st.button("Schedule Generator", key="button_schedule_generator"): 
             st.session_state.script_choice = "sh"
     with col11:
-        if st.button("QA/QC"):
+        if st.button("QA / QC", key="button_qa_qc"):
             st.session_state.script_choice = "q"
     with col12:
-        if st.button("Contact"): #Queries
+        if st.button("Contact Us", key="button_contact"): #Queries
             st.session_state.script_choice = "ask"
     with col13:
-        if st.button("Analytics"): #Queries
-            st.session_state.script_choice = ""
+        if st.button("Analytics", key="button_analytics"): #Queries
+            st.session_state.script_choice = "sh1"
     with col14:
-        if st.button("References"): #Queries
+        if st.button("View References", key="button_references"): #Queries
             st.session_state.script_choice = "reference"
     with col15:
-        if st.button("Log in"): #Queries
+        if st.button("Log In", key="button_login"): #Queries
             st.session_state.script_choice = "login"
     
     # Based on the user selection, display appropriate input fields and run the script
@@ -269,9 +287,9 @@ def main():
         col1, col2 = st.columns(2)
         with col1:
             st.markdown("""
-            <h3 style="color:red;">🌐 Welcome to eQuest Utilities</h3>
+            <h4 style="color:red;">🌐 Welcome to eQUEST Utilities</h4>
     
-            eQuest Utilities is a comprehensive suite of tools designed to help you work with eQuest more efficiently. 
+            eQUEST Utilities is a comprehensive suite of tools designed to help you work with eQUEST more efficiently. 
             Our utilities include:
     
             - <b style="color:red;">INP Parser:</b> A tool to parse INP files and extract meaningful data.
@@ -286,7 +304,7 @@ def main():
         with col2:
             st.image("https://www.filepicker.io/api/file/ISb3e710QSmh95AYIdef", width=560)
         st.markdown(""" Navigate through the tools using the buttons above to get started. Each tool is designed to simplify 
-            specific tasks related to eQuest project management. We hope these utilities make your workflow smoother 
+            specific tasks related to eQUEST project management. We hope these utilities make your workflow smoother 
             and more productive.
         """, unsafe_allow_html=True)
         
@@ -294,7 +312,7 @@ def main():
         col1, col2 = st.columns(2)
         with col1:
             st.markdown("""
-            <h3 style="color:red;">🌐 Overview</h3>
+            <h4 style="color:red;">🌐 Overview</h4>
     
             Environmental Design Solutions [EDS] is a sustainability advisory firm focusing on the built environment. Since its inception in 2002,
             EDS has worked on over 800 green building and energy efficiency projects worldwide. The diverse milieu of its team of experts converges on
@@ -329,6 +347,20 @@ def main():
         if uploaded_file is not None:
             if st.button("Generate INP"):
                 schedule_v01.get_schedule(uploaded_file)
+        schedule_v01.analytics(uploaded_file)
+        schedule_v01.analytics1(uploaded_file)
+
+    elif st.session_state.script_choice == "sh1":
+        st.markdown("""
+        <h4 style="color:red;">📈 Analytics Dashboard</h4>
+        <b>Purpose:</b> Our CSV-Based Schedule Generator Tool is designed to simplify and automate the process of creating schedules. By leveraging data from a CSV file, this tool efficiently generates a structured and optimized bar chart and pie chart of Daily Schedules Visualizations. <br>
+        <br>
+        """, unsafe_allow_html=True)
+        
+        uploaded_file = st.file_uploader("Upload CSV or EXCEL file", type=["csv", "xlsx"], accept_multiple_files=False)
+        if uploaded_file is not None:
+            # if st.button("View Analytics"):
+            sheduls_analytics.get_schedule(uploaded_file)
         schedule_v01.analytics(uploaded_file)
         schedule_v01.analytics1(uploaded_file)
 
@@ -401,20 +433,27 @@ def main():
         4. BuildingGreen. (n.d.). Energy modeling with ASHRAE 209: A way throughout design and beyond. Retrieved from [https://www.buildinggreen.com/newsbrief/energy-modeling-ashrae-209-way-throughout-design-and-beyond](https://www.buildinggreen.com/newsbrief/energy-modeling-ashrae-209-way-throughout-design-and-beyond)
         
         5. ASHRAE. (n.d.). Building energy modeling fundamentals. Retrieved from [https://www.ashrae.org/professional-development/elearning/ashrae-elearning-catalog/building-energy-modeling-fundamentals](https://www.ashrae.org/professional-development/elearning/ashrae-elearning-catalog/building-energy-modeling-fundamentals)
+        
         6. Stack Overflow. (n.d.). Resource for finding or requesting scripts. Retrieved from [https://stackoverflow.com/](https://stackoverflow.com/)
+        
         7. Unmet Hours. (n.d.). Resource for finding or requesting scripts. Retrieved from [https://unmethours.com/questions/](https://unmethours.com/questions/)
+        
         8. OpenWaterAnalytics. (n.d.). Stormwater Management Model. Retrieved from [https://github.com/OpenWaterAnalytics/Stormwater-Management-Model/blob/develop/README.md](https://github.com/OpenWaterAnalytics/Stormwater-Management-Model/blob/develop/README.md)
+        
         9. OpenSWMM. (n.d.). SWMM Utilities. Retrieved from [https://www.openswmm.org/SWMMUtilities](https://www.openswmm.org/SWMMUtilities)
+        
         10. UCDavis. (n.d.). py-equest-sim-parser. Retrieved from [https://github.com/ucdavis/py-equest-sim-parser](https://github.com/ucdavis/py-equest-sim-parser)
+        
         11. CloudConvert. (n.d.). Tool to convert SIM files to PDF for better sharing. Retrieved from [https://cloudconvert.com](https://cloudconvert.com)
+        
         12. OpenSWMM. (n.d.). SWMM Baseline Automation. Retrieved from [https://www.openswmm.org/SWMMUtilities#automation](https://www.openswmm.org/SWMMUtilities#automation)
+        
         13. Vertex42. (n.d.). Excel schedule template. Retrieved from [https://www.vertex42.com/ExcelTemplates/excel-schedule-template.html](https://www.vertex42.com/ExcelTemplates/excel-schedule-template.html)
+        
         14. ASQ. (n.d.). Quality assurance vs quality control. Retrieved from [https://asq.org/quality-resources/quality-assurance-vs-control](https://asq.org/quality-resources/quality-assurance-vs-control)
         """
         
         st.markdown(references_bibliography, unsafe_allow_html=True)
-
-
     elif st.session_state.script_choice == "q":
         st.markdown("""
         <h4 style="color:red;">🔍 Quality Check / Quality Assurance</h4>
@@ -427,12 +466,12 @@ def main():
         with col2:
             uploaded_b_file = st.file_uploader("Upload a Baseline SIM file", type="sim", accept_multiple_files=False)
         if uploaded_p_file is not None and uploaded_b_file is not None:
-            if st.button("Generate Table"):
-                qa.getTwoSimFiles(uploaded_p_file, uploaded_b_file)
+            # if st.button("Table based on Metering"):
+            qa.getTwoSimFiles(uploaded_p_file, uploaded_b_file)
 
     elif st.session_state.script_choice == "SIM to PDF":
         st.markdown("""
-        <h3 style="color:red;">📝 SIM to PDF Converter</h3>
+        <h4 style="color:red;">📝 SIM to PDF Converter</h4>
         <b>Purpose:</b> This tool converts SIM files into PDF format, making it easier to share and document simulation results.
         """, unsafe_allow_html=True)
         
@@ -458,30 +497,32 @@ def main():
                 st.success("OUTPUT: Check your working directory for the generated PDF files.")
        
     elif st.session_state.script_choice == "ask":
+        st.markdown("""
+        <h4 style="color:red;">🖥 Contact Us</h4>
+        """, unsafe_allow_html=True)
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.write(icon_with_tooltip1, unsafe_allow_html=True)
+            # st.write(icon_with_tooltip1, unsafe_allow_html=True)
             email = st.text_input("Enter your mail:")
             user_input = st.text_area("Enter your Queries:")
+            # Submit button
+            if st.button("Submit"):
+                if user_input and email:
+                    subject = "Text Area Submission"
+                    message = user_input
+                    EMAIL = email
+                    if send_email(subject, message, EMAIL, TO_EMAIL):
+                        st.success("Email sent successfully!")
+                else:
+                    st.warning("Please enter your Queries.")
         with col2:
             st.image("https://images.jdmagicbox.com/comp/delhi/k8/011pxx11.xx11.180809193209.h6k8/catalogue/environmental-design-solutions-vasant-vihar-delhi-environmental-management-consultants-leuub0bjnn.jpg", width=290)
         with col3:
             st.image("data:image/jpeg;base64,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", width=380)
-    
-        # Submit button
-        if st.button("Submit"):
-            if user_input and email:
-                subject = "Text Area Submission"
-                message = user_input
-                EMAIL = email
-                if send_email(subject, message, EMAIL, TO_EMAIL):
-                    st.success("Email sent successfully!")
-            else:
-                st.warning("Please enter your Queries.")
 
     elif st.session_state.script_choice == "exe":
         st.markdown("""
-        <h3 style="color:red;">🖥️ EXE Files</h3>
+        <h4 style="color:red;">🖥️ EXE Files</h4>
         """, unsafe_allow_html=True)
         col1, col2, col3, col4, col5, col6 = st.columns(6)
         with col1:
@@ -509,7 +550,7 @@ def main():
             # st.write("[Download](url_to_exe_1)")https://drive.google.com/file/d/1G2AJ4qhLmqdPm3G7-JzhXQasRF9ve14W/view?usp=drive_link
         with col6:
             st.image("images/schedule.png", width = 110)
-            st.write("[Download](https://drive.google.com/file/d/1G2AJ4qhLmqdPm3G7-JzhXQasRF9ve14W/view?usp=drive_link)")
+            st.write("[Download](https://drive.google.com/file/d/1dNyT8-b6OaRsScR-VXvuGZU_NedIAZHb/view?usp=drive_link)")
             
         st.markdown("""
             <h5 style="color:black;">📄 Documents to read</h5>
@@ -521,17 +562,13 @@ def main():
                 <li><b style="color:red;">Schedule Template:</b> <a href="https://drive.google.com/file/d/112sPbkonINRBrd9FfBvSDnE-IYEPb1PO/view?usp=drive_link" target="_blank">Template of Schedules</a></li>
             </ul>
             """, unsafe_allow_html=True)
-        
-        # Add more cards as needed
         st.markdown("""
-        #### Note:
-        Due to the large size of eQuest Utilities exe files, they may not be suitable for direct hosting on our website. 
-        However, they are available for download.
-        """)
+        <h5 style="color:black;"><b> Note:</b></h5>Due to the large size of eQuest Utilities exe files, they may not be suitable for direct hosting on our website. However, they are available for download.
+        """, unsafe_allow_html=True)
 
     elif st.session_state.script_choice == "baselineAutomation":
         st.markdown("""
-        <h3 style="color:red;">🤖 Baseline Automation</h3>
+        <h4 style="color:red;">🤖 Baseline Automation</h4>
         """, unsafe_allow_html=True)
         st.markdown("""
         <b>Purpose:</b> The Baseline Automation tool assists in modifying INP files based on user-defined criteria to create baseline models for comparison.
@@ -589,7 +626,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# footer with copyrights and social media links 
+# Designed and Developed by section
 st.markdown(
     """
     <div class="social-media" style="margin-top: 10px;">
