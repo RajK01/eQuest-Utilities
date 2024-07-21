@@ -81,7 +81,8 @@ def getScheduleINP(data):
             row_values = row[1:25].tolist()
             # Replace consecutive duplicates with &D
             row_values = replace_consecutive_duplicates(row_values)
-            formatted_values = ', '.join(str(value) for value in row_values if pd.notnull(value))
+            formatted_values = ', '.join(map(str, row_values))
+            
             # Write to the file
             write_line(format_line(f'"{schedule_name}" = DAY-SCHEDULE-PD'))
             write_line(format_line(f"   TYPE             = {type_value}"))
@@ -108,7 +109,7 @@ def getScheduleINP(data):
             # Extract values from 2nd to 11th column for the current row
             row_values = row[1:11].tolist()
             row_values = replace_consecutive_duplicates(row_values)
-            formatted_day = ', '.join(f'"{value}"' if value != '&D' else value for value in row_values if pd.notnull(value))
+            formatted_day = ', '.join(f'"{value}"' if value != '&D' else value for value in row_values)
 
             write_line(format_line(f'"{schedule_name}" = WEEK-SCHEDULE-PD'))
             write_line(format_line(f"   TYPE             = {type_value}"))
@@ -123,58 +124,30 @@ def getScheduleINP(data):
     write_line("$ ---------------------------------------------------------")
     write_line("")
 
-    # Find all the indexes of 'Month' and 'Day' rows
-    month_indexes = data.index[data.iloc[:, 0] == 'Month'].tolist()
+    # Extracting the 'Hour' row values from 2nd to 25th column
+    month_values = data.loc[data.iloc[:, 0] == 'Month'].iloc[0, 1:13].tolist()
+    day_values = data.loc[data.iloc[:, 0] == 'Month'].iloc[0, 1:13].tolist()
+    next_row_values = data.iloc[data.index[data.iloc[:, 0] == 'Month'][0] + 1, 1:13].tolist()
+    formatted_values1 = ', '.join(map(str, month_values))
+    formatted_values2 = ', '.join(map(str, next_row_values))
     
-    for i, month_row_index in enumerate(month_indexes):
-        # Extract values for formatted_values1 from 'Month' row
-        month_values = data.iloc[month_row_index, 1:13].tolist()
-        formatted_values1 = ', '.join([str(x) for x in month_values if pd.notnull(x) and x != 'Columns can be added here till 8760'])
+    for index, row in data.iterrows():
+        if index > idx3 and index < len(data):
+            schedule_name = row[0]
+            # Extract values from 2nd to 13th column for the current row
+            row_values = row[1:13].tolist()
+            formatted_days = ', '.join(f'"{value}"' for value in row_values)
 
-        # Extract values for formatted_values2 from 'Day' row
-        day_row_index = month_row_index + 1
-        day_values = data.iloc[day_row_index, 1:13].tolist()
-        formatted_values2 = ', '.join(map(str, filter(pd.notnull, day_values)))
-
-        # Extract schedule values for each schedule block
-        if day_row_index + 1 < len(data):
-            for schedule_row_index in range(day_row_index + 1, len(data)):
-                schedule_name = data.iloc[schedule_row_index, 0]
-                
-                if schedule_name.lower() in ["month", "day"]:
-                    break
-                
-                row_values = data.iloc[schedule_row_index, 1:13].tolist()
-                formatted_days = ', '.join(f'"{value}"' for value in row_values if pd.notnull(value))
-                
-                write_line(format_line(f'"{schedule_name}" = SCHEDULE-PD'))
-                write_line(format_line(f"   TYPE             = {type_value}"))
-                write_line(format_line(f"   MONTH            = ( {formatted_values1} )"))
-                write_line(format_line(f"   DAY              = ( {formatted_values2} )"))
-                write_line(format_line(f"   WEEK-SCHEDULES   = ( {formatted_days} )"))
-                write_line(format_line("   .."))
-                # write_line(format_line(""))
+            write_line(format_line(f'"{schedule_name}" = SCHEDULE-PD'))
+            write_line(format_line(f"   TYPE             = {type_value}"))
+            write_line(format_line(f"   MONTH            = ( {formatted_values1} )"))
+            write_line(format_line(f"   DAY              = ( {formatted_values2} )"))
+            write_line(format_line(f"   WEEK-SCHEDULES   = ( {formatted_days} )"))
+            write_line(format_line("   .."))
+            # write_line("")
     
-    # write_line("")
-    # write_line("")
-    # write_line("$ ---------------------------------------------------------")
-    # write_line("$              THE END")
-    # write_line("$ ---------------------------------------------------------")
-    # write_line("")
-    # write_line("END ..")
-    # write_line("COMPUTE ..")
-    # write_line("STOP ..")
-
     # Get the content of the in-memory text stream
     inp_content = output.getvalue()
     
     # Close the StringIO object
     output.close()
-
-    st.success("INP Generated Successfully!")
-    st.download_button(
-        label="Download INP File",
-        data=inp_content,
-        file_name=file_name,
-        mime="text/plain"
-    )
